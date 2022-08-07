@@ -7,10 +7,15 @@ import 'package:get_storage/get_storage.dart';
 import 'package:sicantik/internationalization.dart';
 import 'package:sicantik/screens/home_screen.dart';
 import 'package:sicantik/theme_data.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
+  GetStorage box = GetStorage();
+  box.erase();
+  VisibilityDetectorController.instance.updateInterval =
+      const Duration(milliseconds: 5);
 
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,

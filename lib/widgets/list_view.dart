@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:focus_detector/focus_detector.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:sicantik/utils.dart';
+import 'package:sicantik/widgets/scrollbar.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
-Widget generate_list_view(
+GetStorage box = GetStorage();
+
+BoxScrollView generate_list_view(
     {required ScrollController scrollController,
-    required List<CardData> card_data_list,
-    required void Function(String) onVisibilityGained,
-    required void Function(String) onVisibilityLost}) {
+    required List<CardData> card_data_list}) {
   // divider for the card
   const card_divider = Divider(
     thickness: 5,
@@ -15,7 +17,6 @@ Widget generate_list_view(
   );
   return ListView.builder(
       controller: scrollController,
-      shrinkWrap: true,
       padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
       physics: const BouncingScrollPhysics(),
       scrollDirection: Axis.vertical,
@@ -38,25 +39,37 @@ Widget generate_list_view(
             ],
           ),
           child: Center(
-              child: FocusDetector(
-            onVisibilityGained: () {
-              onVisibilityGained(headline);
+              child: VisibilityDetector(
+            key: Key(index.toString()),
+            onVisibilityChanged: (VisibilityInfo info) {
+              // onVisibilityGained(headline);
+              Set<dynamic> visibleHeadlines = {};
+              if (box.hasData(visibleHeadlinesKey)) {
+                visibleHeadlines = {
+                  ...box.read(visibleHeadlinesKey)
+                };
+              }
+              if (info.visibleFraction == 1.0) {
+                visibleHeadlines.add(index);
+              } else {
+                visibleHeadlines.remove(index);
+              }
+              box.write(visibleHeadlinesKey, visibleHeadlines.toList());
             },
-            onVisibilityLost: () {
-              onVisibilityLost(headline);
-            },
-            child: Column(
-              children: [
-                // the title
-                Row(children: <Widget>[
-                  const Expanded(child: card_divider),
-                  Text(headline, textScaleFactor: 1.5),
-                  const Expanded(child: card_divider),
-                ]),
-                // the description
-                Text(description)
-              ],
-            ),
+            child: Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: Column(
+                  children: [
+                    // the title
+                    Row(children: <Widget>[
+                      const Expanded(child: card_divider),
+                      Text(headline, textScaleFactor: 1.5),
+                      const Expanded(child: card_divider),
+                    ]),
+                    // the description
+                    Text(description)
+                  ],
+                )),
           )),
         );
       });

@@ -1,21 +1,24 @@
 import 'package:flexible_scrollbar/flexible_scrollbar.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:sicantik/utils.dart';
 
 const String visibleHeadlinesKey = "visibleHeadlines";
 
 Widget scrollbar_wrapper(
     {required Widget child,
     required ScrollController scrollController,
+    required List<CardData> card_data_list,
     bool isVertical = true,
     double thumbDragWidth = 30,
-    double thumbWidth = 10,
+    double thumbWidth = 15,
     Duration animationDuration = const Duration(milliseconds: 300)}) {
   return FlexibleScrollbar(
+      scrollLineOffset: 4,
       alwaysVisible: true,
       controller: scrollController,
       scrollThumbBuilder: (ScrollbarInfo info) {
-        final bool isMoving = info.isDragging || info.isScrolling;
+        final bool isMoving = info.isDragging;
         final double width = isVertical
             ? isMoving
                 ? thumbDragWidth
@@ -31,7 +34,7 @@ Widget scrollbar_wrapper(
             height: height,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(thumbWidth),
-                color: Colors.grey.withOpacity(isMoving ? 0.6 : 0.3)),
+                color: Colors.grey.withOpacity(isMoving ? 0.9 : 0.6)),
             duration: animationDuration,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -50,20 +53,20 @@ Widget scrollbar_wrapper(
             ));
       },
       scrollLabelBuilder: (info) {
-        final bool isMoving = info.isDragging || info.isScrolling;
+        final bool isMoving = info.isDragging;
 
-        if (isMoving) {
-          GetStorage box = GetStorage();
-          List<dynamic> visibleHeadlines = [];
-          if (box.hasData(visibleHeadlinesKey)) {
-            visibleHeadlines = box.read(visibleHeadlinesKey);
-          }
-          String scrollBarLabel = visibleHeadlines.reversed.join('\n');
+        GetStorage box = GetStorage();
+        List<dynamic>? visibleHeadlines = box.read(visibleHeadlinesKey);
+
+        if (isMoving && visibleHeadlines != null) {
+          visibleHeadlines.sort();
+          String scrollBarLabel =
+              visibleHeadlines.map((index) => card_data_list[index].title).join('\n');
 
           return Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Colors.blue.withOpacity(0.9),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Text(
