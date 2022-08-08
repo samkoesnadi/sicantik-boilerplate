@@ -10,11 +10,12 @@ Widget scrollbar_wrapper(
     required ScrollController scrollController,
     required List<CardData> card_data_list,
     bool isVertical = true,
-    double thumbDragWidth = 30,
-    double thumbWidth = 15,
-    Duration animationDuration = const Duration(milliseconds: 300)}) {
+    double thumbDragWidth = 25,
+    double thumbWidth = 20,
+    Duration animationDuration = const Duration(milliseconds: 100)}) {
   return FlexibleScrollbar(
       scrollLineOffset: 4,
+      scrollLabelOffset: thumbDragWidth + 10,
       alwaysVisible: true,
       controller: scrollController,
       scrollThumbBuilder: (ScrollbarInfo info) {
@@ -34,7 +35,7 @@ Widget scrollbar_wrapper(
             height: height,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(thumbWidth),
-                color: Colors.grey.withOpacity(isMoving ? 0.9 : 0.6)),
+                color: Colors.grey.withOpacity(isMoving ? 0.6 : 0.3)),
             duration: animationDuration,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

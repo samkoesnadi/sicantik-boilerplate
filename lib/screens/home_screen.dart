@@ -46,7 +46,6 @@ class HomeScreenState extends State<HomeScreen> {
             card_data_list: sample_card_data_list),
         appBar: AppBar(
           title: Text("title".tr),
-          toolbarHeight: 40, // Set this height
           actions: [
             InkWell(
                 onTap: () {}, child: const Icon(Icons.account_circle_rounded)),
